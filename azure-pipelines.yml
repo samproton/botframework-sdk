@@ -22,6 +22,8 @@ steps:
   inputs:
     restoreSolution: '$(solution)'
 
+- powershell: 'git checkout axsuarez/initial-antlr-cs'
+
 - task: VSBuild@1
   inputs:
     solution: '$(solution)'
