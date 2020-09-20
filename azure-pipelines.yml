@@ -7,7 +7,6 @@ trigger:
     include:
      - axsuarez/initial-antlr-cs
 
-
 pool:
   vmImage: 'windows-2019'
 
