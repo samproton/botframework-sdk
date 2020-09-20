@@ -17,12 +17,12 @@ variables:
   buildConfiguration: 'Release'
 
 steps:
+- powershell: 'git checkout axsuarez/initial-antlr-cs'
+
 - task: NuGetToolInstaller@1
 - task: NuGetCommand@2
   inputs:
     restoreSolution: '$(solution)'
-
-- powershell: 'git checkout axsuarez/initial-antlr-cs'
 
 - task: VSBuild@1
   inputs:
