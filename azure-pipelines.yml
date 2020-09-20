@@ -17,7 +17,7 @@ variables:
 
 steps:
 - powershell: 'git checkout axsuarez/initial-antlr-cs'
-
+  displayName: 'Checkout beta branch'
 - task: NuGetToolInstaller@1
 - task: NuGetCommand@2
   inputs:
