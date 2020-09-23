@@ -173,6 +173,10 @@ Given these elements, the number of test cases for each scenario can be calculat
 **Alternate flows**
 
 - The Skill sends a proactive OAuthPrompt because a user token has expired.
+- TODO: we may also need to consider negative/edge scenarios like:
+  - The user has never authorized the application
+  - The user has previously authorized the application
+  - The login fails
 
 **Total test cases:** 96 (not including alternate flows)
 
