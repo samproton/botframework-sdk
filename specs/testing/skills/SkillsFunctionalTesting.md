@@ -208,7 +208,7 @@ Given these elements, the number of test cases for each scenario can be calculat
 
 **Testing matrix**
 
-- Skill: TeamsBot
+- Skill: [TeamsBot](https://github.com/microsoft/BotBuilder-Samples/tree/main/samples/csharp_dotnetcore/57.teams-conversation-bot)
 - Topology: [Simple](#simple)
 
 ![Bot SDLC](media/Simple.jpg)
