@@ -115,7 +115,7 @@ Given these elements, the number of test cases for each scenario can be calculat
 
 **Testing matrix**
 
-- Skill: TBD
+- Skill: RemindMe
 - Topology: [Simple](#simple)
 
 ![Bot SDLC](media/Simple.jpg)
@@ -129,6 +129,7 @@ Given these elements, the number of test cases for each scenario can be calculat
 
 1. The skill creates a conversation (in teams) and starts a 1:1 conversation with a user in the group. Note - the 1:1 conversations created persist, and there is no way to delete them. Repeated calls to createConversation will succeed however, and return the appropriate conversationId that can be re-used.
 
+
 **Total test cases:** 96 (not including alternate flows)
 
 ### 4. Card actions that generate invokes and message activities
@@ -137,7 +138,7 @@ Given these elements, the number of test cases for each scenario can be calculat
 
 **Testing matrix**
 
-- Skill: TBD
+- Skill: [Consolidate card functions](https://fuselabs.visualstudio.com/TeamsIntegrationTesting/_git/TeamsIntegrationTesting?path=%2FDotnetIntegrationBot%2FIntegrationCommandHandler.cs)
 - Topology: [Simple](#simple)
 
 ![Bot SDLC](media/Simple.jpg)
@@ -148,9 +149,8 @@ Given these elements, the number of test cases for each scenario can be calculat
 - Delivery mode: Normal, ExpectReplies
 
 **Alternate flows**
-
-1. Skill sends proactive message that updates the card.
-2. Skill sends proactive message that deletes the card.
+1. Skill sends proactive message that [updates the card](https://github.com/microsoft/BotBuilder-Samples/blob/22c01b317b9b7c8418eb1799a2031739637a8307/samples/csharp_dotnetcore/57.teams-conversation-bot/Bots/TeamsConversationBot.cs#L58). 
+2. Skill sends proactive message that [deletes the card](https://github.com/microsoft/BotBuilder-Samples/blob/22c01b317b9b7c8418eb1799a2031739637a8307/samples/csharp_dotnetcore/57.teams-conversation-bot/Bots/TeamsConversationBot.cs#L58).
 
 **Total test cases:** 96 (not including alternate flows)
 
@@ -173,6 +173,7 @@ Given these elements, the number of test cases for each scenario can be calculat
 **Alternate flows**
 
 - The Skill sends a proactive OAuthPrompt because a user token has expired.
+- **Question:** Are there other timeout scenarios that exist here? 
 
 **Total test cases:** 96 (not including alternate flows)
 
@@ -254,7 +255,7 @@ Given these elements, the number of test cases for each scenario can be calculat
 
 **Testing matrix**
 
-- Skill: TeamsBot
+- Skill: [TeamsBot](https://fuselabs.visualstudio.com/TeamsIntegrationTesting/_git/TeamsIntegrationTesting?path=%2FDotnetIntegrationBot%2FBots%2FIntegrationBot.cs&version=GBmaster&line=94&lineEnd=95&lineStartColumn=1&lineEndColumn=1&lineStyle=plain)
 - Topology: [Simple](#simple)
 
 ![Bot SDLC](media/Simple.jpg)
@@ -276,7 +277,7 @@ Given these elements, the number of test cases for each scenario can be calculat
 
 **Testing matrix**
 
-- Skill: TBD
+- Skill: [File functionality](https://fuselabs.visualstudio.com/TeamsIntegrationTesting/_git/TeamsIntegrationTesting?path=%2FDotnetIntegrationBot%2FIntegrationCommandHandler.cs&version=GBmaster&line=222&lineEnd=223&lineStartColumn=1&lineEndColumn=1&lineStyle=plain)
 - Topology: [Simple](#simple)
 
 ![Bot SDLC](media/Simple.jpg)
@@ -289,7 +290,11 @@ Given these elements, the number of test cases for each scenario can be calculat
 
 **Alternate flows**
 
-- TODO
+**Questions**
+- Are there any unsupported file types?
+- What happens if we upload the same file multiple times
+- What happens if we upload a file that's too large
+- What if the skill doesn't know what to do with an attachment
 
 **Total test cases:** 96? (not including alternate flows)
 
