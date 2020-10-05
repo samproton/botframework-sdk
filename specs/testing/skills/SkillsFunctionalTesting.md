@@ -109,9 +109,34 @@ Given these elements, the number of test cases for each scenario can be calculat
 
 **Total test cases:** 96 (not including alternate flows)
 
-### 3. Skill sends a proactive message to consumer
+### 3. Skill sends a proactive message to consumer - conversation update
 
 > A consumer calls a _timer skill_ and the skill finishes the conversation but stores some tasks. Then, some time later the skill sends an update to the consumer as a message.
+
+
+**Testing matrix**
+
+- Skill: [Proactive messaging](https://github.com/microsoft/BotBuilder-Samples/tree/main/samples/csharp_dotnetcore/16.proactive-messages)
+- Topology: [Simple](#simple)
+
+![Bot SDLC](media/Simple.jpg)
+
+**Variables**
+
+- Auth context: Public Cloud, Gov Cloud, Sandboxed
+- Delivery mode: Normal, ExpectReplies
+
+**Alternate flows**
+
+1. The skill creates a conversation (in teams) and starts a 1:1 conversation with a user in the group. Note - the 1:1 conversations created persist, and there is no way to delete them. Repeated calls to createConversation will succeed however, and return the appropriate conversationId that can be re-used.
+2. **NOTE: Are there meaningful differences in other channels between create and continue conversation?**
+
+**Total test cases:** 96 (not including alternate flows)
+
+### 3a. Skill sends a proactive message to consumer - create conversation
+
+> A consumer calls a _reminder skill_ and the skill finishes the conversation but stores some tasks. Then, some time later the skill creates a new conversation with the consumer and sends a message.
+
 
 **Testing matrix**
 
@@ -131,6 +156,7 @@ Given these elements, the number of test cases for each scenario can be calculat
 
 
 **Total test cases:** 96 (not including alternate flows)
+
 
 ### 4. Card actions that generate invokes and message activities
 
@@ -208,7 +234,7 @@ Given these elements, the number of test cases for each scenario can be calculat
 
 **Testing matrix**
 
-- Skill: TeamsBot
+- Skill: [TeamsBot](https://github.com/microsoft/BotBuilder-Samples/tree/main/samples/csharp_dotnetcore/57.teams-conversation-bot)
 - Topology: [Simple](#simple)
 
 ![Bot SDLC](media/Simple.jpg)
