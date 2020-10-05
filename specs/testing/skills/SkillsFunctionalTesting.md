@@ -201,10 +201,9 @@ Given these elements, the number of test cases for each scenario can be calculat
 
 ### 7. A skill uses team specific APIs
 
-> TODO: Currently not supported but it would involve things like:
->
 > - Retrieve list of channels in a team
 > - Get team info
+> - Get members from a non-team-scoped conversation
 > - Retreive the _paged_ list of uses in a group where the group is large enough to necessitate more than one page.
 
 **Testing matrix**
@@ -221,7 +220,7 @@ Given these elements, the number of test cases for each scenario can be calculat
 
 **Alternate flows**
 
-- TODO
+- Calling a Team-scoped skill from a 1-to-1 or group chat conversation
 
 **Total test cases:** 96 (not including alternate flows)
 
