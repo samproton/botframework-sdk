@@ -21,12 +21,14 @@ To support these goals, the testing infrastructure used to validate the function
   - [2. Multi turn interaction with a skill](#2-multi-turn-interaction-with-a-skill)
   - [3. Skill sends a proactive message to consumer](#3-skill-sends-a-proactive-message-to-consumer)
   - [4. Card actions that generate invokes and message activities](#4-card-actions-that-generate-invokes-and-message-activities)
-  - [5. The skill needs to authenticate the user with an OAuthCard](#5-the-skill-needs-to-authenticate-the-user-with-an-oauthcard)
-  - [6. The consumer authenticates the user and passes OAuth credentials to the skill using SSO](#6-the-consumer-authenticates-the-user-and-passes-oauth-credentials-to-the-skill-using-sso)
-  - [7. A skill uses team specific APIs](#7-a-skill-uses-team-specific-apis)
-  - [8. Skill calls another skill](#8-skill-calls-another-skill)
-  - [9. A skill provides a teams task module](#9-a-skill-provides-a-teams-task-module)
-  - [10. A skill receives an attachment](#10-a-skill-receives-an-attachment)
+  - [5. A skill can update and delete an adaptive card](#5-a-skill-can-update-and-delete-an-adaptive-card)
+  - [6. The skill needs to authenticate the user with an OAuthCard](#6-the-skill-needs-to-authenticate-the-user-with-an-oauthcard)
+  - [7. The consumer authenticates the user and passes OAuth credentials to the skill using SSO](#7-the-consumer-authenticates-the-user-and-passes-oauth-credentials-to-the-skill-using-sso)
+  - [8. A skill uses team specific APIs](#8-a-skill-uses-team-specific-apis)
+  - [9. Skill calls another skill](#9-skill-calls-another-skill)
+  - [10. A skill provides a teams task module](#10-a-skill-provides-a-teams-task-module)
+  - [11. A skill receives an attachment](#11-a-skill-receives-an-attachment)
+  - [12. Skill proactively starts a conversation with a user](#12-skill-proactively-starts-a-conversation-with-a-user)
   - [XX. Draft scenarios](#xx-draft-scenarios)
 - [Reference](#reference)
   - [Things a skill might want to do](#things-a-skill-might-want-to-do)
@@ -40,11 +42,14 @@ To support these goals, the testing infrastructure used to validate the function
     - [Circular](#circular)
 - [Implementation notes](#implementation-notes)
   - [Consumers](#consumers)
-  - [Skill](#skill)
+  - [Skills](#skills)
     - [GetWeather skill](#getweather-skill)
     - [Travel skill](#travel-skill)
     - [OAuth skill](#oauth-skill)
     - [Teams skill](#teams-skill)
+    - [Proactive Skill](#proactive-skill)
+    - [Card Skill](#card-skill)
+    - [RemindMe Skill](#remindme-skill)
   - [Infrastructure](#infrastructure)
 - [Glossary](#glossary)
 
@@ -56,9 +61,9 @@ The different permutations between consumers, skills and their implementation la
 
 The variables section lists the set of [variables](#variables) that apply to the test case and  need to be configured for each case in the matrix.
 
-Wherever is relevant, we also include a list of alternate flows that describe small variations in the test case (e.g.: state of the consumer, state of the skill, error condition, special considerations, etc.).
+Wherever is relevant, we also include a list of variations that describe small variations in the test case (e.g.: state of the consumer, state of the skill, error condition, special considerations, etc.).
 
-Given these elements, the number of test cases for each scenario can be calculated by multiplying the number of permutations in the matrix by the number of values for each variable and then multiplied by the number of alternate flows.
+Given these elements, the number of test cases for each scenario can be calculated by multiplying the number of permutations in the matrix by the number of values for each variable and then multiplied by the number of variations.
 
 ### 1. Single turn interaction with a skill
 
@@ -76,16 +81,16 @@ Given these elements, the number of test cases for each scenario can be calculat
 - Auth context: Public Cloud, Gov Cloud, Sandboxed
 - Delivery mode: Normal, ExpectReplies
 
-**Alternate flows**
+**Variations**
 
 1. Negative test, a consumer tries to call a regular bot as a skill (and the bot is not a skill).
 
-**Total test cases:** 96 (not including alternate flows)
+**Total test cases:** 96 (not including variations)
 
 
 ### 2. Multi turn interaction with a skill
 
-> A consumer bot starts a multi turn interaction with a skill (e.g.: book a flight) and handles multiple turns (2 or more) until the skill completes the task.
+> A consumer bot starts a multi turn interaction with a skill (e.g.: book a flight) and handles multiple turns (2 or more) until the skill completes the task. 
 
 **Testing matrix**
 
@@ -99,7 +104,7 @@ Given these elements, the number of test cases for each scenario can be calculat
 - Auth context: Public Cloud, Gov Cloud, Sandboxed
 - Delivery mode: Normal, ExpectReplies
 
-**Alternate flows**
+**Variations**
 
 1. The consumer cancels the skill (sends EndOfConversation)
 2. The consumer sends parameters to the skill
@@ -107,16 +112,16 @@ Given these elements, the number of test cases for each scenario can be calculat
 4. The skill sends an event to the consumer (GetLocation) and the consumer sends an event back to the skill.
 5. The skill throws and exception and fails (the consumer gets a 500 error)
 
-**Total test cases:** 96 (not including alternate flows)
+**Total test cases:** 96 (not including variations)
 
-### 3. Skill sends a proactive message to consumer - conversation update
+### 3. Skill sends a proactive message to consumer
 
 > A consumer calls a _timer skill_ and the skill finishes the conversation but stores some tasks. Then, some time later the skill sends an update to the consumer as a message.
 
 
 **Testing matrix**
 
-- Skill: [Proactive messaging](https://github.com/microsoft/BotBuilder-Samples/tree/main/samples/csharp_dotnetcore/16.proactive-messages)
+- Skill: [Proactive skill](#proactive-skill)
 - Topology: [Simple](#simple)
 
 ![Bot SDLC](media/Simple.jpg)
@@ -126,37 +131,11 @@ Given these elements, the number of test cases for each scenario can be calculat
 - Auth context: Public Cloud, Gov Cloud, Sandboxed
 - Delivery mode: Normal, ExpectReplies
 
-**Alternate flows**
+**Variations**
+1. The skill starts a multiturn dialog.
+   - When the timer is up the skill sends an option to snooze or end. 
 
-1. The skill creates a conversation (in teams) and starts a 1:1 conversation with a user in the group. Note - the 1:1 conversations created persist, and there is no way to delete them. Repeated calls to createConversation will succeed however, and return the appropriate conversationId that can be re-used.
-2. **NOTE: Are there meaningful differences in other channels between create and continue conversation?**
-
-**Total test cases:** 96 (not including alternate flows)
-
-### 3a. Skill sends a proactive message to consumer - create conversation
-
-> A consumer calls a _reminder skill_ and the skill finishes the conversation but stores some tasks. Then, some time later the skill creates a new conversation with the consumer and sends a message.
-
-
-**Testing matrix**
-
-- Skill: RemindMe
-- Topology: [Simple](#simple)
-
-![Bot SDLC](media/Simple.jpg)
-
-**Variables**
-
-- Auth context: Public Cloud, Gov Cloud, Sandboxed
-- Delivery mode: Normal, ExpectReplies
-
-**Alternate flows**
-
-1. The skill creates a conversation (in teams) and starts a 1:1 conversation with a user in the group. Note - the 1:1 conversations created persist, and there is no way to delete them. Repeated calls to createConversation will succeed however, and return the appropriate conversationId that can be re-used.
-
-
-**Total test cases:** 96 (not including alternate flows)
-
+**Total test cases:** 96 (not including variations)
 
 ### 4. Card actions that generate invokes and message activities
 
@@ -164,7 +143,7 @@ Given these elements, the number of test cases for each scenario can be calculat
 
 **Testing matrix**
 
-- Skill: [Consolidate card functions](https://fuselabs.visualstudio.com/TeamsIntegrationTesting/_git/TeamsIntegrationTesting?path=%2FDotnetIntegrationBot%2FIntegrationCommandHandler.cs)
+- Skill: [Card skill](#card-skill)
 - Topology: [Simple](#simple)
 
 ![Bot SDLC](media/Simple.jpg)
@@ -174,13 +153,34 @@ Given these elements, the number of test cases for each scenario can be calculat
 - Auth context: Public Cloud, Gov Cloud, Sandboxed
 - Delivery mode: Normal, ExpectReplies
 
-**Alternate flows**
-1. Skill sends proactive message that [updates the card](https://github.com/microsoft/BotBuilder-Samples/blob/22c01b317b9b7c8418eb1799a2031739637a8307/samples/csharp_dotnetcore/57.teams-conversation-bot/Bots/TeamsConversationBot.cs#L58). 
-2. Skill sends proactive message that [deletes the card](https://github.com/microsoft/BotBuilder-Samples/blob/22c01b317b9b7c8418eb1799a2031739637a8307/samples/csharp_dotnetcore/57.teams-conversation-bot/Bots/TeamsConversationBot.cs#L58).
+**Variations**
 
-**Total test cases:** 96 (not including alternate flows)
+**Total test cases:** 96 (not including variations)
 
-### 5. The skill needs to authenticate the user with an OAuthCard
+### 5. A skill can update and delete an adaptive card
+
+> The skill renders an adpative card with two buttons and one text field. 
+> The text field shows the current number of times the "Update" button has been clicked
+> The first button is "Update" which increases the number in the text field by 1
+> The second button is "Delete" which deletes the adaptive card  
+
+**Testing matrix**
+
+- Skill: [Consolidate card functions](#teams-skill)
+- Topology: [Simple](#simple)
+
+**Variables**
+
+- Auth context: Public Cloud, Gov Cloud, Sandboxed
+- Delivery mode: Normal, ExpectReplies
+
+**Variations**
+1. **Note** There is probably channel specific behavior that exists here. Need to understand how cards work in various channels
+2. **Note** We should also cross reference what kinds of cards work in what channels
+
+**Total test cases:** 96 (not including variations)
+
+### 6. The skill needs to authenticate the user with an OAuthCard
 
 > A consumer bot starts a multi turn interaction with a skill (e.g.: how does my day look like) and the skill renders an OAuthPrompt to allow the user to log in, once the skill obtains a token it performs an operation, returns a response to the user and logs it out.
 
@@ -196,14 +196,14 @@ Given these elements, the number of test cases for each scenario can be calculat
 - Auth context: Public Cloud, Gov Cloud, Sandboxed
 - Delivery mode: Normal, ExpectReplies
 
-**Alternate flows**
+**Variations**
 
 - The Skill sends a proactive OAuthPrompt because a user token has expired.
 - **Question:** Are there other timeout scenarios that exist here? 
 
-**Total test cases:** 96 (not including alternate flows)
+**Total test cases:** 96 (not including variations)
 
-### 6. The consumer authenticates the user and passes OAuth credentials to the skill using SSO
+### 7. The consumer authenticates the user and passes OAuth credentials to the skill using SSO
 
 > A consumer bot starts a multi turn interaction with a skill (e.g.: how does my day look like) and the skill renders an OAuthPrompt to allow the user to log in, once the skill obtains a token it performs an operation, returns a response to the user and logs it out.
 
@@ -219,13 +219,13 @@ Given these elements, the number of test cases for each scenario can be calculat
 - Auth context: Public Cloud, Gov Cloud, Sandboxed
 - Delivery mode: Normal, ExpectReplies
 
-**Alternate flows**
+**Variations**
 
 - TODO
 
-**Total test cases:** 96 (not including alternate flows)
+**Total test cases:** 96 (not including variations)
 
-### 7. A skill uses team specific APIs
+### 8. A skill uses team specific APIs
 
 > - Retrieve list of channels in a team
 > - Get team info
@@ -244,13 +244,14 @@ Given these elements, the number of test cases for each scenario can be calculat
 - Auth context: Public Cloud, Gov Cloud, Sandboxed
 - Delivery mode: Normal, ExpectReplies
 
-**Alternate flows**
+**Variations**
 
-- Calling a Team-scoped skill from a 1-to-1 or group chat conversation
+- Trying to access Team specific information from a 1:1 or group chat
+  - EX: Calling `GetTeamChannels` from a 1:1 chat
 
-**Total test cases:** 96 (not including alternate flows)
+**Total test cases:** 96 (not including variations)
 
-### 8. Skill calls another skill
+### 9. Skill calls another skill
 
 > TODO
 
@@ -267,13 +268,13 @@ Given these elements, the number of test cases for each scenario can be calculat
 - Auth context: Public Cloud, Gov Cloud, Sandboxed
 - Delivery mode: Normal, ExpectReplies
 
-**Alternate flows**
+**Variations**
 
 - Proactively initiate a multi turn conversation.
 
-**Total test cases:** 192 (not including alternate flows)
+**Total test cases:** 192 (not including variations)
 
-### 9. A skill provides a teams task module
+### 10. A skill provides a teams task module
 
 > The Skill responds to an action/submit invoke with a `taskInfo` object containing a Task Module with an Adaptive Card
 > The Skill responds to the submit action of a TaskModule
@@ -290,13 +291,13 @@ Given these elements, the number of test cases for each scenario can be calculat
 - Auth context: Public Cloud, Gov Cloud, Sandboxed
 - Delivery mode: Normal, ExpectReplies
 
-**Alternate flows**
+**Variations**
 
 - TODO
 
-**Total test cases:** 96 (not including alternate flows)
+**Total test cases:** 96 (not including variations)
 
-### 10. A skill receives an attachment
+### 11. A skill receives an attachment
 
 > As part of a multi turn conversation a skill is expecting a file that needs to be uploaded consumer bot and then relayed to the skill
 
@@ -313,7 +314,7 @@ Given these elements, the number of test cases for each scenario can be calculat
 - Delivery mode: Normal, ExpectReplies
 - Channel: TODO not sure about this yet
 
-**Alternate flows**
+**Variations**
 
 **Questions**
 - Are there any unsupported file types?
@@ -321,7 +322,36 @@ Given these elements, the number of test cases for each scenario can be calculat
 - What happens if we upload a file that's too large
 - What if the skill doesn't know what to do with an attachment
 
-**Total test cases:** 96? (not including alternate flows)
+**Total test cases:** 96? (not including variations)
+
+### 12. Skill proactively starts a conversation with a user
+
+> DRAFT: A user is in a Teams group chat with a bot and some other users. 
+> The user says @reminderSkill remind me to finish my status report at 4 PM. 
+> The skill schedules a task to fire at 4 PM. 
+> At 4 PM, the skill starts 1:1 a conversation (CreateConversation) and sends the reminder to the user.
+
+
+**Testing matrix**
+
+- Skill: [RemindMe](#remindme-skill)
+- Topology: [Simple](#simple)
+
+![Bot SDLC](media/Simple.jpg)
+
+**Variables**
+
+- Auth context: Public Cloud, Gov Cloud, Sandboxed
+- Delivery mode: Normal, ExpectReplies
+
+**Variations**
+
+1. The skill creates a conversation (in teams) and starts a 1:1 conversation with a user in the group. Note - the 1:1 conversations created persist, and there is no way to delete them. Repeated calls to createConversation will succeed however, and return the appropriate conversationId that can be re-used.
+
+
+**Total test cases:** 96 (not including variations)
+
+
 
 ### XX. Draft scenarios
 
@@ -467,7 +497,7 @@ Based on the scenarios described above we will need to build the following artif
 - VA consumer bot (C# and TS)
 - PVA consumer bot (C#)
 
-### Skill
+### Skills
 
 #### GetWeather skill
 
@@ -482,13 +512,30 @@ Composer, C# waterfall, JS waterfall, Python waterfall.
 C#, JS, Python
 
 #### Teams skill
+Teams skill should implement the update and delete functionality from the [Teams conversation bot](https://github.com/microsoft/BotBuilder-Samples/tree/main/samples/csharp_dotnetcore/57.teams-conversation-bot) sample.
 
 C#, JS, Python
+
+#### Proactive Skill
+C#, JS, Python 
+
+**Note:** Implement as a refactor of [proactive messages sample](https://github.com/microsoft/BotBuilder-Samples/tree/main/samples/csharp_dotnetcore/16.proactive-messages)
+
+#### Card Skill
+C#, JS, Python
+
+**Note** Implement as a refactor of [This controller](https://fuselabs.visualstudio.com/TeamsIntegrationTesting/_git/TeamsIntegrationTesting?path=%2FDotnetIntegrationBot%2FIntegrationCommandHandler.cs)
+
+#### RemindMe Skill
+C#, JS, Python
+
+**Note** Message bot to send message some time later
 
 ### Infrastructure
 
 - Proactive service (C#)
 - Transcript based test runner (C#)
+
 
 ## Glossary
 
